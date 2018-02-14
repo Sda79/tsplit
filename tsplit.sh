@@ -1,14 +1,12 @@
 #!/bin/bash
 
-# tsplit split your terminal n by m
-#   $1 : session name
-#   $2 : number of line
-#   $3 : number of column
+# tsplit split your current tmux in n lines by m columns
+#   $1 : number of line
+#   $2 : number of column
 tsplit() {
-    tmux new-session -d -s $1
-    line=$2
+    line=$1
     (( line-- ))
-    col=$3
+    col=$2
     (( col-- ))
     for i in `seq 1 $line`;
     do
@@ -16,7 +14,6 @@ tsplit() {
     done
     tmux select-layout even-horizontal
     (( line++ ))
-    echo $percent
     for k in `seq 1 $line`;
     do
         percent=$(echo "100-100/$((col + 1))" | bc)
@@ -24,9 +21,25 @@ tsplit() {
         do
             tmux splitw -v -p $percent
             percent=$(echo "100-100/($col - $j + 1)" | bc)
-            echo $percent
         done
         tmux select-pane -L
     done
-    tmux attach -t $1
+    tmux select-pane -t 0
 }
+
+#t4panes split your current tmux in 4 by 4
+t4panes() {
+    tsplit 2 2  
+}
+
+# tnwin create n 4 by 4 windows in your current tmux
+#   $1 number of windows
+tnwin() {
+    t4panes
+    for k in `seq 2 $1`;
+    do
+        tmux new-window
+        t4panes
+    done
+}
+
