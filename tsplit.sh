@@ -41,5 +41,5 @@ tnwin() {
         tmux new-window
         t4panes
     done
+    tmux select-window -t 0
 }
-
